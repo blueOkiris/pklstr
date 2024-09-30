@@ -1,0 +1,10 @@
+# C files
+
+*.a
+*.o
+*.bin
+
+# ACBS
+
+.hdrtimes/
+
