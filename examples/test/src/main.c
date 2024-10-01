@@ -173,6 +173,7 @@ int main(int argc, char **argv) {
         fprintf(stderr, "\n");
         return 1;
     }
+    string_free(&string4);
     printf(
         "Result: { .len = %lu, .cap = %lu, .str = '%s' }\n",
         string3.len, string3.cap, string3.str
@@ -191,6 +192,23 @@ int main(int argc, char **argv) {
     printf(
         "Result: { .len = %lu, .cap = %lu, .str = '%s' }\n",
         string3.len, string3.cap, string3.str
+    );
+
+    printf("Grab a substring...\n");
+    string_result_t sub_res = string_substring(&string3, 18, 5);
+    if (sub_res.is_err) {
+        fprintf(stderr, "Error occurred: %lu", (size_t) sub_res.err.code);
+        if (sub_res.err.msg) {
+            fprintf(stderr, " - %s", sub_res.err.msg);
+        }
+        fprintf(stderr, "\n");
+        return 1;
+    }
+    string_free(&string3);
+    string_t sub = sub_res.ok;
+    printf(
+        "Result: { .len = %lu, .cap = %lu, .str = '%s' }\n",
+        sub.len, sub.cap, sub.str
     );
 
     return 0;

@@ -153,7 +153,13 @@ result_t string_remove_at(string_t *ref_string, const size_t index, const size_t
 
 // Other
 
+
 // TODO: substring, index of char/str/string
+
+string_result_t string_substring(string_t *ref_string, const size_t start, const size_t len);
+//size_option_t string_index_of_char(string_t *ref_string, const char c);
+//size_option_t string_index_of_str(string_t *ref_string, const char *str);
+//size_option_t string_index_of_string(string_t *ref_string, const string_t *other);
 
 // TODO: Wide string versions
 

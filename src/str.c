@@ -203,3 +203,39 @@ result_t string_remove_at(string_t *ref_string, const size_t index, const size_t
     return (result_t) { .is_err = false, .ok = {} };
 }
 
+string_result_t string_substring(string_t *ref_string, const size_t start, const size_t len) {
+    if (start + len >= ref_string->len) {
+        return (string_result_t) {
+            .is_err = true,
+            .err = (pklstr_err_t) {
+                .code = PKLSTR_ERR_OUT_OF_BOUNDS,
+                .msg = NULL
+            }
+        };
+    }
+    char *str_mem = ref_string->malloc(len + 1);
+    if (!str_mem) {
+        return (string_result_t) {
+            .is_err = true,
+            .err = (pklstr_err_t) {
+                .code = PKLSTR_ERR_ALLOC_FAILED,
+                .msg = NULL
+            }
+        };
+    }
+    memcpy(str_mem, ref_string->str + start, len);
+    str_mem[len] = '\0';
+    return (string_result_t) {
+        .is_err = false,
+        .ok = (string_t) {
+            .len = len,
+            .cap = len + 1,
+            .str = str_mem,
+
+            .malloc = ref_string->malloc,
+            .realloc = ref_string->realloc,
+            .free = ref_string->free
+        }
+    };
+}
+
