@@ -61,7 +61,8 @@ typedef struct {
 
 // Error codes
 typedef enum {
-    PKLSTR_ERR_ALLOC_FAILED
+    PKLSTR_ERR_ALLOC_FAILED,        // Malloc/Realloc failed
+    PKLSTR_ERR_OUT_OF_BOUNDS        // Index provided to a function was outside the string's len
 } pklstr_err_code_t;
 
 // Errors
@@ -140,11 +141,14 @@ void wstring_free(wstring_t *ref_string);
 
 // Insertion/Removal
 
-// TODO: append char/str/string, insert char/str/string at, remove at
+// TODO: remove at
 
 result_t string_append_char(string_t *ref_string, const char c);
 result_t string_append_str(string_t *ref_string, const char *str);
 result_t string_append_string(string_t *ref_string, const string_t *other);
+result_t string_insert_char_at(string_t *ref_string, const char c, const size_t index);
+result_t string_insert_str_at(string_t *ref_string, const char *str, const size_t index);
+result_t string_insert_string_at(string_t *ref_string, const string_t *other, const size_t index);
 
 // TODO: Wide string versions
 

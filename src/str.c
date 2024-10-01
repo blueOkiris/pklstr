@@ -1,5 +1,6 @@
 // Implement functionality for string_t
 
+#include <stdio.h>
 #include <string.h>
 #include <pklstr.h>
 
@@ -130,5 +131,57 @@ result_t string_append_str(string_t *ref_string, const char *str) {
 result_t string_append_string(string_t *ref_string, const string_t *other) {
     // Could be more efficient bc could use ->len instead of call to strlen, but not huge deal
     return string_append_str(ref_string, other->str);
+}
+
+result_t string_insert_char_at(string_t *ref_string, const char c, const size_t index) {
+    if (index >= ref_string->len) {
+        return (result_t) {
+            .is_err = true,
+            .err = (pklstr_err_t) {
+                .code = PKLSTR_ERR_OUT_OF_BOUNDS,
+                .msg = NULL
+            }
+        };
+    }
+    result_t append = string_append_char(ref_string, c); // Make room for the new character
+    if (append.is_err) {
+        return append;
+    }
+    // Shift the string
+    for (size_t i = ref_string->len - 1; i > index; i--) {
+        ref_string->str[i] = ref_string->str[i - 1];
+    }
+    ref_string->str[index] = c;
+    ref_string->str[ref_string->len] = '\0';
+    return (result_t) { .is_err = false, .ok = {} };
+}
+
+result_t string_insert_str_at(string_t *ref_string, const char *str, const size_t index) {
+    if (index >= ref_string->len) {
+        return (result_t) {
+            .is_err = true,
+            .err = (pklstr_err_t) {
+                .code = PKLSTR_ERR_OUT_OF_BOUNDS,
+                .msg = NULL
+            }
+        };
+    }
+    size_t len = strlen(str);
+    result_t append = string_append_str(ref_string, str);
+    if (append.is_err) {
+        return append;
+    }
+    for (size_t i = ref_string->len - 1; i > index + len - 1; i--) {
+        ref_string->str[i] = ref_string->str[i - len];
+    }
+    for (size_t i = 0; i < len; i++) {
+        ref_string->str[i + index] = str[i];
+    }
+    ref_string->str[ref_string->len] = '\0';
+    return (result_t) { .is_err = false, .ok = {} };
+}
+
+result_t string_insert_string_at(string_t *ref_string, const string_t *other, const size_t index) {
+    return string_insert_str_at(ref_string, other->str, index);
 }
 

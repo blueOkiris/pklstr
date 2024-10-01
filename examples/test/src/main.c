@@ -105,8 +105,79 @@ int main(int argc, char **argv) {
         "Result: { .len = %lu, .cap = %lu, .str = '%s' }\n",
         string.len, string.cap, string.str
     );
-
     string_free(&string);
+
+    printf("Resetting to a new string...\n");
+    string_result_t string2_res = string_from("Hello world!", CHAR_DEF_ALLOC);
+    if (string2_res.is_err) {
+        fprintf(stderr, "Error occurred: %lu", (size_t) string2_res.err.code);
+        if (string2_res.err.msg) {
+            fprintf(stderr, " - %s", string2_res.err.msg);
+        }
+        fprintf(stderr, "\n");
+        return 1;
+    }
+    string_t string3 = string2_res.ok;
+    printf(
+        "Result: { .len = %lu, .cap = %lu, .str = '%s' }\n",
+        string3.len, string3.cap, string3.str
+    );
+
+    printf("Inserting a char...\n");
+    result_t char_ins_res = string_insert_char_at(&string3, ',', 5);
+    if (char_ins_res.is_err) {
+        fprintf(stderr, "Error occurred: %lu", (size_t) char_ins_res.err.code);
+        if (char_ins_res.err.msg) {
+            fprintf(stderr, " - %s", char_ins_res.err.msg);
+        }
+        fprintf(stderr, "\n");
+        return 1;
+    }
+    printf(
+        "Result: { .len = %lu, .cap = %lu, .str = '%s' }\n",
+        string3.len, string3.cap, string3.str
+    );
+
+    printf("Inserting a str...\n");
+    result_t str_ins_res = string_insert_str_at(&string3, " beautiful", 6);
+    if (str_ins_res.is_err) {
+        fprintf(stderr, "Error occurred: %lu", (size_t) str_ins_res.err.code);
+        if (str_ins_res.err.msg) {
+            fprintf(stderr, " - %s", str_ins_res.err.msg);
+        }
+        fprintf(stderr, "\n");
+        return 1;
+    }
+    printf(
+        "Result: { .len = %lu, .cap = %lu, .str = '%s' }\n",
+        string3.len, string3.cap, string3.str
+    );
+
+    printf("Inserting a string...\n");
+    string_result_t string4_res = string_from("It's a great day! ", CHAR_DEF_ALLOC);
+    if (string4_res.is_err) {
+        fprintf(stderr, "Error occurred: %lu", (size_t) string4_res.err.code);
+        if (string4_res.err.msg) {
+            fprintf(stderr, " - %s", string4_res.err.msg);
+        }
+        fprintf(stderr, "\n");
+        return 1;
+    }
+    string_t string4 = string4_res.ok;
+    result_t string_ins_res = string_insert_string_at(&string3, &string4, 0);
+    if (string_ins_res.is_err) {
+        fprintf(stderr, "Error occurred: %lu", (size_t) string_ins_res.err.code);
+        if (string_ins_res.err.msg) {
+            fprintf(stderr, " - %s", string_ins_res.err.msg);
+        }
+        fprintf(stderr, "\n");
+        return 1;
+    }
+    printf(
+        "Result: { .len = %lu, .cap = %lu, .str = '%s' }\n",
+        string3.len, string3.cap, string3.str
+    );
+
     return 0;
 }
 
