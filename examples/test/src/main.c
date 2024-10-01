@@ -211,6 +211,22 @@ int main(int argc, char **argv) {
         sub.len, sub.cap, sub.str
     );
 
+    printf("Index of char...\n");
+    size_option_t char_ind_opt = string_index_of_char(&sub, 'e');
+    if (!char_ind_opt.is_some) {
+        fprintf(stderr, "Couldn't find 'e' in 'Hello'!\n");
+        return 1;
+    }
+    printf("'e' is index %lu of '%s'\n", char_ind_opt.some, sub.str);
+
+    printf("Index of str...\n");
+    size_option_t str_ind_opt = string_index_of_str(&sub, "ll");
+    if (!str_ind_opt.is_some) {
+        fprintf(stderr, "Couldn't find 'll' in 'Hello'!\n");
+        return 1;
+    }
+    printf("'ll' is index %lu of '%s'\n", str_ind_opt.some, sub.str);
+
     return 0;
 }
 

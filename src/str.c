@@ -239,3 +239,26 @@ string_result_t string_substring(string_t *ref_string, const size_t start, const
     };
 }
 
+size_option_t string_index_of_char(string_t *ref_string, const char c) {
+    for (size_t i = 0; i < ref_string->len; i++) {
+        if (ref_string->str[i] == c) {
+            return (size_option_t) { .is_some = true, .some = i };
+        }
+    }
+    return (size_option_t) { .is_some = false, .none = {} };
+}
+
+size_option_t string_index_of_str(string_t *ref_string, const char *str) {
+    size_t len = strlen(str);
+    for (size_t i = 0; i < ref_string->len - len; i++) {
+        if (strncmp(ref_string->str + i, str, len) == 0) {
+            return (size_option_t) { .is_some = true, .some = i };
+        }
+    }
+    return (size_option_t) { .is_some = false, .none = {} };
+}
+
+size_option_t string_index_of_string(string_t *ref_string, const string_t *other) {
+    return string_index_of_str(ref_string, other->str);
+}
+
