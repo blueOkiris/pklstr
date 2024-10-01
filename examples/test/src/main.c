@@ -178,6 +178,21 @@ int main(int argc, char **argv) {
         string3.len, string3.cap, string3.str
     );
 
+    printf("Removing a piece...\n");
+    result_t rm_res = string_remove_at(&string3, 24, 10);
+    if (rm_res.is_err) {
+        fprintf(stderr, "Error occurred: %lu", (size_t) rm_res.err.code);
+        if (rm_res.err.msg) {
+            fprintf(stderr, " - %s", rm_res.err.msg);
+        }
+        fprintf(stderr, "\n");
+        return 1;
+    }
+    printf(
+        "Result: { .len = %lu, .cap = %lu, .str = '%s' }\n",
+        string3.len, string3.cap, string3.str
+    );
+
     return 0;
 }
 

@@ -185,3 +185,21 @@ result_t string_insert_string_at(string_t *ref_string, const string_t *other, co
     return string_insert_str_at(ref_string, other->str, index);
 }
 
+result_t string_remove_at(string_t *ref_string, const size_t index, const size_t len) {
+    if (index + len >= ref_string->len) {
+        return (result_t) {
+            .is_err = true,
+            .err = (pklstr_err_t) {
+                .code = PKLSTR_ERR_OUT_OF_BOUNDS,
+                .msg = NULL
+            }
+        };
+    }
+    for (int i = 0; i < len; i++) {
+        ref_string->str[i + index] = ref_string->str[i + index + len];
+    }
+    ref_string->len -= len;
+    ref_string->str[ref_string->len] = '\0';
+    return (result_t) { .is_err = false, .ok = {} };
+}
+
