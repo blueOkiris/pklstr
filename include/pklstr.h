@@ -158,17 +158,23 @@ result_t string_insert_str_at(string_t *ref_string, const char *str, const size_
 result_t string_insert_string_at(string_t *ref_string, const string_t *other, const size_t index);
 result_t string_remove_at(string_t *ref_string, const size_t index, const size_t len);
 
-// TODO: Wide string versions
+result_t wstring_append_char(wstring_t *ref_string, const wchar_t c);
+result_t wstring_append_str(wstring_t *ref_string, const wchar_t *str);
+result_t wstring_append_string(wstring_t *ref_string, const wstring_t *other);
+result_t wstring_insert_char_at(wstring_t *ref_string, const wchar_t c, const size_t index);
+result_t wstring_insert_str_at(wstring_t *ref_string, const wchar_t *str, const size_t index);
+result_t wstring_insert_string_at(wstring_t *ref_string, const wstring_t *other, const size_t index);
+result_t wstring_remove_at(wstring_t *ref_string, const size_t index, const size_t len);
 
 // Other
-
-
-// TODO: substring, index of char/str/string
 
 string_result_t string_substring(string_t *ref_string, const size_t start, const size_t len);
 size_option_t string_index_of_char(string_t *ref_string, const char c);
 size_option_t string_index_of_str(string_t *ref_string, const char *str);
 size_option_t string_index_of_string(string_t *ref_string, const string_t *other);
 
-// TODO: Wide string versions
+wstring_result_t wstring_substring(wstring_t *ref_string, const size_t start, const size_t len);
+size_option_t wstring_index_of_char(wstring_t *ref_string, const wchar_t c);
+size_option_t wstring_index_of_str(wstring_t *ref_string, const wchar_t *str);
+size_option_t wstring_index_of_string(wstring_t *ref_string, const wstring_t *other);
 

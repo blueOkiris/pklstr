@@ -203,6 +203,8 @@ result_t string_remove_at(string_t *ref_string, const size_t index, const size_t
     return (result_t) { .is_err = false, .ok = {} };
 }
 
+// Other
+
 string_result_t string_substring(string_t *ref_string, const size_t start, const size_t len) {
     if (start + len >= ref_string->len) {
         return (string_result_t) {
