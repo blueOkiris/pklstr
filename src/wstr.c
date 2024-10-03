@@ -26,10 +26,7 @@ wstring_result_t wstring_new(wchar_malloc_t malloc, wchar_realloc_t realloc, wch
     if (!empty) {
         return (wstring_result_t) {
             .is_err = true,
-            .err = (pklstr_err_t) {
-                .code = PKLSTR_ERR_ALLOC_FAILED,
-                .msg = NULL
-            }
+            .err = PKLSTR_ERR_ALLOC_FAILED
         };
     }
     return (wstring_result_t) {
@@ -54,10 +51,7 @@ wstring_result_t wstring_from(
     if (!str_mem) {
         return (wstring_result_t) {
             .is_err = true,
-            .err = (pklstr_err_t) {
-                .code = PKLSTR_ERR_ALLOC_FAILED,
-                .msg = NULL
-            }
+            .err = PKLSTR_ERR_ALLOC_FAILED
         };
     }
     memcpy(str_mem, str, capacity);
@@ -83,18 +77,15 @@ void wstring_free(wstring_t *ref_string) {
 
 // Insertion/Removal
 
-result_t wstring_append_char(wstring_t *ref_string, const wchar_t c) {
+pklstr_err_option_t wstring_append_char(wstring_t *ref_string, const wchar_t c) {
     if ((ref_string->len + 2) * sizeof(wchar_t) > ref_string->cap) {
         // Resize (double)
         size_t new_cap = (ref_string->len * 2 + 1) * sizeof(wchar_t);
         ref_string->str = ref_string->realloc(ref_string->str, new_cap);
         if (!ref_string->str) {
-            return (result_t) {
-                .is_err = true,
-                .err = (pklstr_err_t) {
-                    .code = PKLSTR_ERR_ALLOC_FAILED,
-                    .msg = NULL
-                }
+            return (pklstr_err_option_t) {
+                .is_some = true,
+                .some = PKLSTR_ERR_ALLOC_FAILED
             };
         }
         ref_string->cap = new_cap;
@@ -102,10 +93,10 @@ result_t wstring_append_char(wstring_t *ref_string, const wchar_t c) {
     ref_string->str[ref_string->len] = c;
     ref_string->len += 1;
     ref_string->str[ref_string->len] = L'\0';
-    return (result_t) { .is_err = false, .ok = {} };
+    return (pklstr_err_option_t) { .is_some = false, .none = {} };
 }
 
-result_t wstring_append_str(wstring_t *ref_string, const wchar_t *str) {
+pklstr_err_option_t wstring_append_str(wstring_t *ref_string, const wchar_t *str) {
     size_t str_to_add_len = wstrlen(str);
     size_t raw_cap = (ref_string->len + str_to_add_len + 1) * sizeof(wchar_t);
     size_t double_cap = (ref_string->len * 2 + 1) * sizeof(wchar_t);
@@ -114,12 +105,9 @@ result_t wstring_append_str(wstring_t *ref_string, const wchar_t *str) {
             // Do one big allocation instead of multiple doubles
             ref_string->str = ref_string->realloc(ref_string->str, raw_cap);
             if (!ref_string->str) {
-                return (result_t) {
-                    .is_err = true,
-                    .err = (pklstr_err_t) {
-                        .code = PKLSTR_ERR_ALLOC_FAILED,
-                        .msg = NULL
-                    }
+                return (pklstr_err_option_t) {
+                    .is_some = true,
+                    .some = PKLSTR_ERR_ALLOC_FAILED
                 };
             }
             ref_string->cap = raw_cap;
@@ -127,12 +115,9 @@ result_t wstring_append_str(wstring_t *ref_string, const wchar_t *str) {
             // Double
             ref_string->str = ref_string->realloc(ref_string->str, double_cap);
             if (!ref_string->str) {
-                return (result_t) {
-                    .is_err = true,
-                    .err = (pklstr_err_t) {
-                        .code = PKLSTR_ERR_ALLOC_FAILED,
-                        .msg = NULL
-                    }
+                return (pklstr_err_option_t) {
+                    .is_some = true,
+                    .some = PKLSTR_ERR_ALLOC_FAILED
                 };
             }
             ref_string->cap = double_cap;
@@ -143,26 +128,23 @@ result_t wstring_append_str(wstring_t *ref_string, const wchar_t *str) {
     }
     ref_string->len += str_to_add_len;
     ref_string->str[ref_string->len] = L'\0';
-    return (result_t) { .is_err = false, .ok = {} };
+    return (pklstr_err_option_t) { .is_some = false, .none = {} };
 }
 
-result_t wstring_append_string(wstring_t *ref_string, const wstring_t *other) {
+pklstr_err_option_t wstring_append_string(wstring_t *ref_string, const wstring_t *other) {
     // Could be more efficient bc could use ->len instead of call to strlen, but not huge deal
     return wstring_append_str(ref_string, other->str);
 }
 
-result_t wstring_insert_char_at(wstring_t *ref_string, const wchar_t c, const size_t index) {
+pklstr_err_option_t wstring_insert_char_at(wstring_t *ref_string, const wchar_t c, const size_t index) {
     if (index >= ref_string->len) {
-        return (result_t) {
-            .is_err = true,
-            .err = (pklstr_err_t) {
-                .code = PKLSTR_ERR_OUT_OF_BOUNDS,
-                .msg = NULL
-            }
+        return (pklstr_err_option_t) {
+            .is_some = true,
+            .some = PKLSTR_ERR_OUT_OF_BOUNDS
         };
     }
-    result_t append = wstring_append_char(ref_string, c); // Make room for the new character
-    if (append.is_err) {
+    pklstr_err_option_t append = wstring_append_char(ref_string, c); // Make room for the new character
+    if (append.is_some) {
         return append;
     }
     // Shift the string
@@ -171,22 +153,19 @@ result_t wstring_insert_char_at(wstring_t *ref_string, const wchar_t c, const si
     }
     ref_string->str[index] = c;
     ref_string->str[ref_string->len] = '\0';
-    return (result_t) { .is_err = false, .ok = {} };
+    return (pklstr_err_option_t) { .is_some = false, .none = {} };
 }
 
-result_t wstring_insert_str_at(wstring_t *ref_string, const wchar_t *str, const size_t index) {
+pklstr_err_option_t wstring_insert_str_at(wstring_t *ref_string, const wchar_t *str, const size_t index) {
     if (index >= ref_string->len) {
-        return (result_t) {
-            .is_err = true,
-            .err = (pklstr_err_t) {
-                .code = PKLSTR_ERR_OUT_OF_BOUNDS,
-                .msg = NULL
-            }
+        return (pklstr_err_option_t) {
+            .is_some = true,
+            .some = PKLSTR_ERR_OUT_OF_BOUNDS
         };
     }
     size_t len = wstrlen(str);
-    result_t append = wstring_append_str(ref_string, str);
-    if (append.is_err) {
+    pklstr_err_option_t append = wstring_append_str(ref_string, str);
+    if (append.is_some) {
         return append;
     }
     for (size_t i = ref_string->len - 1; i > index + len - 1; i--) {
@@ -196,21 +175,20 @@ result_t wstring_insert_str_at(wstring_t *ref_string, const wchar_t *str, const 
         ref_string->str[i + index] = str[i];
     }
     ref_string->str[ref_string->len] = '\0';
-    return (result_t) { .is_err = false, .ok = {} };
+    return (pklstr_err_option_t) { .is_some = false, .none = {} };
 }
 
-result_t wstring_insert_string_at(wstring_t *ref_string, const wstring_t *other, const size_t index) {
+pklstr_err_option_t wstring_insert_string_at(
+        wstring_t *ref_string, const wstring_t *other, const size_t index) {
     return wstring_insert_str_at(ref_string, other->str, index);
 }
 
-result_t wstring_remove_at(wstring_t *ref_string, const size_t index, const size_t len) {
+pklstr_err_option_t wstring_remove_at(
+        wstring_t *ref_string, const size_t index, const size_t len) {
     if (index + len >= ref_string->len) {
-        return (result_t) {
-            .is_err = true,
-            .err = (pklstr_err_t) {
-                .code = PKLSTR_ERR_OUT_OF_BOUNDS,
-                .msg = NULL
-            }
+        return (pklstr_err_option_t) {
+            .is_some = true,
+            .some = PKLSTR_ERR_OUT_OF_BOUNDS
         };
     }
     for (int i = 0; i < len; i++) {
@@ -218,7 +196,7 @@ result_t wstring_remove_at(wstring_t *ref_string, const size_t index, const size
     }
     ref_string->len -= len;
     ref_string->str[ref_string->len] = '\0';
-    return (result_t) { .is_err = false, .ok = {} };
+    return (pklstr_err_option_t) { .is_some = false, .none = {} };
 }
 
 // Other
@@ -227,20 +205,14 @@ wstring_result_t wstring_substring(wstring_t *ref_string, const size_t start, co
     if (start + len >= ref_string->len) {
         return (wstring_result_t) {
             .is_err = true,
-            .err = (pklstr_err_t) {
-                .code = PKLSTR_ERR_OUT_OF_BOUNDS,
-                .msg = NULL
-            }
+            .err = PKLSTR_ERR_OUT_OF_BOUNDS
         };
     }
     wchar_t *str_mem = ref_string->malloc(sizeof(wchar_t) * (len + 1));
     if (!str_mem) {
         return (wstring_result_t) {
             .is_err = true,
-            .err = (pklstr_err_t) {
-                .code = PKLSTR_ERR_ALLOC_FAILED,
-                .msg = NULL
-            }
+            .err =  PKLSTR_ERR_ALLOC_FAILED
         };
     }
     memcpy(str_mem, ref_string->str + start, len * sizeof(wchar_t));

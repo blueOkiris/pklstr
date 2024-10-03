@@ -25,7 +25,7 @@
 // -------- Types --------
 
 // Allocator used by the string library. A default is provided (based on malloc)
-// This should return NULL on error. Size_t is the number of characters in the string no '\0'
+// This should return NULL on error. Size_t is the number of characters in the string, include '\0'
 typedef char *(*char_malloc_t)(const size_t);
 
 // Same as char_malloc_t above, but for reallocating memory to grow it (default based on realloc)
@@ -63,12 +63,6 @@ typedef struct {
 typedef enum {
     PKLSTR_ERR_ALLOC_FAILED,        // Malloc/Realloc failed
     PKLSTR_ERR_OUT_OF_BOUNDS        // Index provided to a function was outside the string's len
-} pklstr_err_code_t;
-
-// Errors
-typedef struct {
-    pklstr_err_code_t code;
-    char *msg;
 } pklstr_err_t;
 
 // "Result<String, PklstrErr>" - Either a valid string_t (ok) or an error (err)
@@ -87,14 +81,14 @@ typedef struct {
     };
 } wstring_result_t;
 
-// "Result<(), PklstrErr>" - Either an error, or nothing (success)
+// "Option<PklstrErr>" - Either an error, or nothing (success)
 typedef struct {
-    bool is_err;
+    bool is_some;
     union {
-        struct {} ok;
-        pklstr_err_t err;
+        pklstr_err_t some;
+        struct {} none;
     };
-} result_t;
+} pklstr_err_option_t;
 
 // "Option<size_t>" - Either an index or nothing
 typedef struct {
@@ -150,21 +144,27 @@ void wstring_free(wstring_t *ref_string);
 
 // Insertion/Removal
 
-result_t string_append_char(string_t *ref_string, const char c);
-result_t string_append_str(string_t *ref_string, const char *str);
-result_t string_append_string(string_t *ref_string, const string_t *other);
-result_t string_insert_char_at(string_t *ref_string, const char c, const size_t index);
-result_t string_insert_str_at(string_t *ref_string, const char *str, const size_t index);
-result_t string_insert_string_at(string_t *ref_string, const string_t *other, const size_t index);
-result_t string_remove_at(string_t *ref_string, const size_t index, const size_t len);
+pklstr_err_option_t string_append_char(string_t *ref_string, const char c);
+pklstr_err_option_t string_append_str(string_t *ref_string, const char *str);
+pklstr_err_option_t string_append_string(string_t *ref_string, const string_t *other);
+pklstr_err_option_t string_insert_char_at(string_t *ref_string, const char c, const size_t index);
+pklstr_err_option_t string_insert_str_at(string_t *ref_string, const char *str, const size_t index);
+pklstr_err_option_t string_insert_string_at(string_t *ref_string, const string_t *other, const size_t index);
+pklstr_err_option_t string_remove_at(string_t *ref_string, const size_t index, const size_t len);
 
-result_t wstring_append_char(wstring_t *ref_string, const wchar_t c);
-result_t wstring_append_str(wstring_t *ref_string, const wchar_t *str);
-result_t wstring_append_string(wstring_t *ref_string, const wstring_t *other);
-result_t wstring_insert_char_at(wstring_t *ref_string, const wchar_t c, const size_t index);
-result_t wstring_insert_str_at(wstring_t *ref_string, const wchar_t *str, const size_t index);
-result_t wstring_insert_string_at(wstring_t *ref_string, const wstring_t *other, const size_t index);
-result_t wstring_remove_at(wstring_t *ref_string, const size_t index, const size_t len);
+pklstr_err_option_t wstring_append_char(wstring_t *ref_string, const wchar_t c);
+pklstr_err_option_t wstring_append_str(wstring_t *ref_string, const wchar_t *str);
+pklstr_err_option_t wstring_append_string(wstring_t *ref_string, const wstring_t *other);
+pklstr_err_option_t wstring_insert_char_at(
+    wstring_t *ref_string, const wchar_t c, const size_t index
+);
+pklstr_err_option_t wstring_insert_str_at(
+    wstring_t *ref_string, const wchar_t *str, const size_t index
+);
+pklstr_err_option_t wstring_insert_string_at(
+    wstring_t *ref_string, const wstring_t *other, const size_t index
+);
+pklstr_err_option_t wstring_remove_at(wstring_t *ref_string, const size_t index, const size_t len);
 
 // Other
 

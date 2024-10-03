@@ -10,11 +10,7 @@ int main(int argc, char **argv) {
     printf("Testing allocation...\n");
     wstring_result_t string_res = wstring_from(L"こんにちは世界", WCHAR_DEF_ALLOC);
     if (string_res.is_err) {
-        fprintf(stderr, "Error occurred: %lu", (size_t) string_res.err.code);
-        if (string_res.err.msg) {
-            fprintf(stderr, " - %s", string_res.err.msg);
-        }
-        fprintf(stderr, "\n");
+        fprintf(stderr, "Error occurred: %lu\n", (size_t) string_res.err);
         return 1;
     }
     wstring_t string = string_res.ok;
@@ -24,13 +20,9 @@ int main(int argc, char **argv) {
     );
 
     printf("Testing char append...\n");
-    result_t char_append_res = wstring_append_char(&string, L'！');
-    if (char_append_res.is_err) {
-        fprintf(stderr, "Error occurred: %lu", (size_t) char_append_res.err.code);
-        if (string_res.err.msg) {
-            fprintf(stderr, " - %s", char_append_res.err.msg);
-        }
-        fprintf(stderr, "\n");
+    pklstr_err_option_t char_append_res = wstring_append_char(&string, L'！');
+    if (char_append_res.is_some) {
+        fprintf(stderr, "Error occurred: %lu\n", (size_t) char_append_res.some);
         return 1;
     }
     printf(
@@ -39,13 +31,9 @@ int main(int argc, char **argv) {
     );
 
     printf("Testing str append (no resize)...\n");
-    result_t str_append_res1 = wstring_append_str(&string, L" More!");
-    if (str_append_res1.is_err) {
-        fprintf(stderr, "Error occurred: %lu", (size_t) str_append_res1.err.code);
-        if (str_append_res1.err.msg) {
-            fprintf(stderr, " - %s", str_append_res1.err.msg);
-        }
-        fprintf(stderr, "\n");
+    pklstr_err_option_t str_append_res1 = wstring_append_str(&string, L" More!");
+    if (str_append_res1.is_some) {
+        fprintf(stderr, "Error occurred: %lu\n", (size_t) str_append_res1.some);
         return 1;
     }
     printf(
@@ -54,13 +42,9 @@ int main(int argc, char **argv) {
     );
 
     printf("Testing str append (double)...\n");
-    result_t str_append_res2 = wstring_append_str(&string, L" More!");
-    if (str_append_res2.is_err) {
-        fprintf(stderr, "Error occurred: %lu", (size_t) str_append_res2.err.code);
-        if (str_append_res2.err.msg) {
-            fprintf(stderr, " - %s", str_append_res2.err.msg);
-        }
-        fprintf(stderr, "\n");
+    pklstr_err_option_t str_append_res2 = wstring_append_str(&string, L" More!");
+    if (str_append_res2.is_some) {
+        fprintf(stderr, "Error occurred: %lu\n", (size_t) str_append_res2.some);
         return 1;
     }
     printf(
@@ -69,13 +53,9 @@ int main(int argc, char **argv) {
     );
 
     printf("Testing str append (more than double)...\n");
-    result_t str_append_res3 = wstring_append_str(&string, L" Way Way Way Way Way Way More!");
-    if (str_append_res3.is_err) {
-        fprintf(stderr, "Error occurred: %lu", (size_t) str_append_res3.err.code);
-        if (str_append_res3.err.msg) {
-            fprintf(stderr, " - %s", str_append_res3.err.msg);
-        }
-        fprintf(stderr, "\n");
+    pklstr_err_option_t str_append_res3 = wstring_append_str(&string, L" Way Way Way Way Way Way More!");
+    if (str_append_res3.is_some) {
+        fprintf(stderr, "Error occurred: %lu\n", (size_t) str_append_res3.some);
         return 1;
     }
     printf(
@@ -86,21 +66,13 @@ int main(int argc, char **argv) {
     printf("Testing string append...\n");
     wstring_result_t string_res2 = wstring_from(L" Even More", WCHAR_DEF_ALLOC);
     if (string_res2.is_err) {
-        fprintf(stderr, "Error occurred: %lu", (size_t) string_res2.err.code);
-        if (string_res2.err.msg) {
-            fprintf(stderr, " - %s", string_res2.err.msg);
-        }
-        fprintf(stderr, "\n");
+        fprintf(stderr, "Error occurred: %lu\n", (size_t) string_res2.err);
         return 1;
     }
     wstring_t string2 = string_res2.ok;
-    result_t string_append_res = wstring_append_string(&string, &string2);
-    if (string_append_res.is_err) {
-        fprintf(stderr, "Error occurred: %lu", (size_t) string_append_res.err.code);
-        if (string_append_res.err.msg) {
-            fprintf(stderr, " - %s", string_append_res.err.msg);
-        }
-        fprintf(stderr, "\n");
+    pklstr_err_option_t string_append_res = wstring_append_string(&string, &string2);
+    if (string_append_res.is_some) {
+        fprintf(stderr, "Error occurred: %lu\n", (size_t) string_append_res.some);
         return 1;
     }
     wstring_free(&string2);
@@ -113,11 +85,7 @@ int main(int argc, char **argv) {
     printf("Resetting to a new string...\n");
     wstring_result_t string2_res = wstring_from(L"こんにちは世界！", WCHAR_DEF_ALLOC);
     if (string2_res.is_err) {
-        fprintf(stderr, "Error occurred: %lu", (size_t) string2_res.err.code);
-        if (string2_res.err.msg) {
-            fprintf(stderr, " - %s", string2_res.err.msg);
-        }
-        fprintf(stderr, "\n");
+        fprintf(stderr, "Error occurred: %lu\n", (size_t) string2_res.err);
         return 1;
     }
     wstring_t string3 = string2_res.ok;
@@ -127,13 +95,9 @@ int main(int argc, char **argv) {
     );
 
     printf("Inserting a char...\n");
-    result_t char_ins_res = wstring_insert_char_at(&string3, L' ', 5);
-    if (char_ins_res.is_err) {
-        fprintf(stderr, "Error occurred: %lu", (size_t) char_ins_res.err.code);
-        if (char_ins_res.err.msg) {
-            fprintf(stderr, " - %s", char_ins_res.err.msg);
-        }
-        fprintf(stderr, "\n");
+    pklstr_err_option_t char_ins_res = wstring_insert_char_at(&string3, L' ', 5);
+    if (char_ins_res.is_some) {
+        fprintf(stderr, "Error occurred: %lu\n", (size_t) char_ins_res.some);
         return 1;
     }
     printf(
@@ -142,13 +106,9 @@ int main(int argc, char **argv) {
     );
 
     printf("Inserting a str...\n");
-    result_t str_ins_res = wstring_insert_str_at(&string3, L" beautiful", 6);
-    if (str_ins_res.is_err) {
-        fprintf(stderr, "Error occurred: %lu", (size_t) str_ins_res.err.code);
-        if (str_ins_res.err.msg) {
-            fprintf(stderr, " - %s", str_ins_res.err.msg);
-        }
-        fprintf(stderr, "\n");
+    pklstr_err_option_t str_ins_res = wstring_insert_str_at(&string3, L" beautiful", 6);
+    if (str_ins_res.is_some) {
+        fprintf(stderr, "Error occurred: %lu\n", (size_t) str_ins_res.some);
         return 1;
     }
     printf(
@@ -159,21 +119,13 @@ int main(int argc, char **argv) {
     printf("Inserting a string...\n");
     wstring_result_t string4_res = wstring_from(L"It's a great day! ", WCHAR_DEF_ALLOC);
     if (string4_res.is_err) {
-        fprintf(stderr, "Error occurred: %lu", (size_t) string4_res.err.code);
-        if (string4_res.err.msg) {
-            fprintf(stderr, " - %s", string4_res.err.msg);
-        }
-        fprintf(stderr, "\n");
+        fprintf(stderr, "Error occurred: %lu\n", (size_t) string4_res.err);
         return 1;
     }
     wstring_t string4 = string4_res.ok;
-    result_t string_ins_res = wstring_insert_string_at(&string3, &string4, 0);
-    if (string_ins_res.is_err) {
-        fprintf(stderr, "Error occurred: %lu", (size_t) string_ins_res.err.code);
-        if (string_ins_res.err.msg) {
-            fprintf(stderr, " - %s", string_ins_res.err.msg);
-        }
-        fprintf(stderr, "\n");
+    pklstr_err_option_t string_ins_res = wstring_insert_string_at(&string3, &string4, 0);
+    if (string_ins_res.is_some) {
+        fprintf(stderr, "Error occurred: %lu\n", (size_t) string_ins_res.some);
         return 1;
     }
     wstring_free(&string4);
@@ -183,13 +135,9 @@ int main(int argc, char **argv) {
     );
 
     printf("Removing a piece...\n");
-    result_t rm_res = wstring_remove_at(&string3, 23, 11);
-    if (rm_res.is_err) {
-        fprintf(stderr, "Error occurred: %lu", (size_t) rm_res.err.code);
-        if (rm_res.err.msg) {
-            fprintf(stderr, " - %s", rm_res.err.msg);
-        }
-        fprintf(stderr, "\n");
+    pklstr_err_option_t rm_res = wstring_remove_at(&string3, 23, 11);
+    if (rm_res.is_some) {
+        fprintf(stderr, "Error occurred: %lu\n", (size_t) rm_res.some);
         return 1;
     }
     printf(
@@ -200,11 +148,7 @@ int main(int argc, char **argv) {
     printf("Grab a substring...\n");
     wstring_result_t sub_res = wstring_substring(&string3, 18, 7);
     if (sub_res.is_err) {
-        fprintf(stderr, "Error occurred: %lu", (size_t) sub_res.err.code);
-        if (sub_res.err.msg) {
-            fprintf(stderr, " - %s", sub_res.err.msg);
-        }
-        fprintf(stderr, "\n");
+        fprintf(stderr, "Error occurred: %lu\n", (size_t) sub_res.err);
         return 1;
     }
     wstring_free(&string3);
